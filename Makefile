@@ -1,21 +1,16 @@
-CFLAGS = -std=c11 -Wall -Werror
+CFLAGS ?= -std=c11 -Wall -Werror
+CC ?= clang
 
-.PHONY: all clean run runemu
+.PHONY: all clean run
 
 all: test emu
 
-test: test.c
-	gcc $(CFLAGS) -o test test.c
+gosie: gosie.c
+	$(CC) $(CFLAGS) -o gosie gosie.c
 
-run: test
-	./test
-
-emu: emu.c
-	gcc $(CFLAGS) -o emu emu.c
-
-runemu: emu
-	./emu
+run: gosie
+	./gosie
 
 clean:
-	rm -f test
+	rm -f gosie tmp.asm tmp.rom
 
