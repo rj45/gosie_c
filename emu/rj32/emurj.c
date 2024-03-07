@@ -38,7 +38,7 @@ int runRj32Emu(uint64_t maxCycles, const uint16_t *progMem, int progLength,
   free(devices[1].context);
 
   if (cpu.error) {
-    return cpu.reg[1] || 1;
+    return cpu.reg[1];
   }
   if (cpu.halt) {
     return 0;

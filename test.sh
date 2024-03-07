@@ -7,6 +7,8 @@ assert() {
   expected="$1"
   input="$2"
 
+  echo ""
+
   ./gosie "$input" > tmp.asm || exit
   customasm -q -f binary -o tmp.rom cpudefs/rj32_cpudef.asm tmp.asm
   ./emu/rj32/emurj tmp.rom
@@ -22,5 +24,8 @@ assert() {
 
 assert 0 0
 assert 42 42
+assert 21 '5+20-4'
+assert 3 '12-14+5'
 
+echo ""
 echo ALL PASS

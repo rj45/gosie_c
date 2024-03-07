@@ -107,8 +107,12 @@ const char *regString(int reg) { return REG_NAMES[reg]; }
 char *instString(char *buf, int sz, Inst ir) {
   switch (ir.fmt) {
   case FMT_RR:
-    snprintf(buf, sz, "%-5s %s, %s", OpcodeString(ir.op), regString(ir.rd),
-             regString(ir.rs));
+    if (ir.op == HALT || ir.op == ERROR) {
+      snprintf(buf, sz, "%-5s", OpcodeString(ir.op));
+    } else {
+      snprintf(buf, sz, "%-5s %s, %s", OpcodeString(ir.op), regString(ir.rd),
+               regString(ir.rs));
+    }
     break;
 
   case FMT_I11: // fallthrough
