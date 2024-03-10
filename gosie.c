@@ -71,9 +71,30 @@ Token nextToken(Tokenizer *tokenizer) {
   return token;
 }
 
-const char *tokenString(Tokenizer tokenizer, Token token) {
-  return tokenizer.src + token.position;
+const char *tokenString(Tokenizer *tokenizer, Token token) {
+  return tokenizer->src + token.position;
 }
+
+typedef enum NodeType {
+  BINARY,
+  LITERAL,
+} NodeType;
+
+typedef struct Node {
+  struct {
+    NodeType type : 8;
+    uint32_t numNodes : 24;
+  };
+  Token token;
+} Node;
+
+typedef struct ValueType ValueType;
+
+typedef struct AST {
+  Node *nodes;      // array of nodes, numNodes long
+  ValueType *types; // array of types, numNodes long
+  int numNodes;
+} AST;
 
 int main(int argc, const char *argv[]) {
   assert(sizeof(Token) == 4);
@@ -89,15 +110,15 @@ int main(int argc, const char *argv[]) {
       fprintf(stderr, "error: invalid token\n");
       return 1;
     case TK_INT:
-      printf("move a0, %d\n", atoi(tokenString(tokenizer, token)));
+      printf("move a0, %d\n", atoi(tokenString(&tokenizer, token)));
       break;
     case TK_ADD:
       token = nextToken(&tokenizer);
-      printf("add a0, %d\n", atoi(tokenString(tokenizer, token)));
+      printf("add a0, %d\n", atoi(tokenString(&tokenizer, token)));
       break;
     case TK_SUB:
       token = nextToken(&tokenizer);
-      printf("sub a0, %d\n", atoi(tokenString(tokenizer, token)));
+      printf("sub a0, %d\n", atoi(tokenString(&tokenizer, token)));
       break;
     case TK_EOF:
       printf("error\n");
