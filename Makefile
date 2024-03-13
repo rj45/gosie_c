@@ -3,7 +3,7 @@ CC ?= clang
 
 .PHONY: all clean run
 
-all: test emu
+all: gosie
 
 gosie: gosie.c
 	$(CC) $(CFLAGS) -o gosie gosie.c
