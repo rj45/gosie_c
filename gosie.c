@@ -6,6 +6,7 @@
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
+  (void)argc;
   assert(sizeof(Token) == 4);
 
   Tokenizer tokenizer;

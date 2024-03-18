@@ -7,10 +7,10 @@ SRCS = ast.c token.c
 
 all: gosie
 
-gosie: $(SRCS) gosie.c
+gosie: $(SRCS) gosie.c gosie.h
 	$(CC) $(CFLAGS) -o gosie $(SRCS) gosie.c
 
-test: test.c $(SRCS) gosie_test.c utest.h
+test: test.c $(SRCS) gosie_test.c utest.h gosie.h
 	$(CC) $(CFLAGS) -o test $(SRCS) test.c gosie_test.c
 
 run: gosie

@@ -58,16 +58,19 @@ const char *tokenStringNoNull(Tokenizer *tokenizer, Token token) {
   return tokenizer->src + token.position;
 }
 
-const char *tokenString(Tokenizer *tokenizer, Token token, char *buffer,
-                        int maxSize, int *size) {
-  assert(maxSize > 0);
+char *tokenString(Tokenizer *tokenizer, Token token, char *buffer, char *end) {
   int len = findTokenEnd(tokenizer, token) - token.position;
-  if (len > maxSize) {
-    len = maxSize;
-  }
-  strncpy(buffer, tokenStringNoNull(tokenizer, token), len);
-  if (size) {
-    *size = len;
-  }
-  return buffer;
+  return seprintf(buffer, end, "%.*s", len,
+                  tokenStringNoNull(tokenizer, token));
 }
+
+static const char *typeStrings[] = {
+    [TK_WHITESPACE] = "whitespace",
+    [TK_INVALID] = "invalid",
+    [TK_INT] = "int",
+    [TK_ADD] = "add",
+    [TK_SUB] = "sub",
+    [TK_EOF] = "eof",
+};
+
+const char *tokenTypeString(TokenType type) { return typeStrings[type]; }
