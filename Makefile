@@ -1,7 +1,7 @@
 CFLAGS ?= -std=c11 -Wall -Werror
 CC ?= clang
 
-SRCS = ast.c token.c
+SRCS = ast.c token.c parser.c
 
 .PHONY: all clean run
 

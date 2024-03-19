@@ -2,6 +2,7 @@
 #define GOSIE_H
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -23,17 +24,26 @@ typedef struct Token {
   TokenType type : 8;
 } Token;
 
-typedef struct Tokenizer {
+static const Token INVALID_TOKEN = {.type = TK_INVALID, .position = 0};
+
+typedef struct Source {
   const char *src;
+  int len;
+} Source;
+
+int srcFindTokenEnd(Source source, Token token);
+const char *srcTokenStringNoNull(Source src, Token token);
+char *srcTokenString(char *start, char *end, Source src, Token token);
+
+typedef struct Tokenizer {
+  Source src;
   Token token;
 } Tokenizer;
 
-void tokenizerInit(Tokenizer *tokenizer, const char *src);
-int findTokenEnd(const Tokenizer *tokenizer, Token token);
-Token findNextToken(const Tokenizer *tokenizer, Token token);
-Token nextToken(Tokenizer *tokenizer);
-const char *tokenStringNoNull(Tokenizer *tokenizer, Token token);
-char *tokenString(Tokenizer *tokenizer, Token token, char *buffer, char *end);
+void tokenizerInit(Tokenizer *tokenizer, Source src);
+Token tokenFindNext(const Tokenizer *tokenizer, Token token);
+Token tokenPeek(Tokenizer *tokenizer);
+Token tokenNext(Tokenizer *tokenizer);
 const char *tokenTypeString(TokenType type);
 
 #pragma endregion
@@ -64,23 +74,35 @@ typedef struct AST {
   int numNodes;
   int capacity;
 
-  Tokenizer tokenizer;
+  Source src;
 } AST;
 
 typedef struct NodeCtx {
   NodeID node;
-  int numNodes;
 } NodeCtx;
 
-void astInit(AST *ast, Tokenizer tokenizer);
+typedef struct NodeRes {
+  NodeID node;
+} NodeRes;
+
+void astInit(AST *ast, Source src);
 void astFree(AST *ast);
 
 NodeID astRootNode(AST *ast);
 NodeCtx astStartNode(AST *ast, NodeType type, Token token);
-void astEndNode(AST *ast, NodeCtx ctx);
-void astAddNode(AST *ast, NodeType type, Token token);
+NodeID astEndNode(AST *ast, NodeCtx ctx);
+NodeID astAddNode(AST *ast, NodeType type, Token token);
+NodeRes astReserveNode(AST *ast);
+NodeCtx astInsertNode(AST *ast, NodeRes reserve, NodeType type, Token token);
+Token astSetToken(AST *ast, NodeCtx ctx, Token token);
 
 char *astDump(AST *ast, NodeID node, int indent, char *start, char *end);
+
+#pragma endregion
+
+#pragma region Parser
+
+void parse(Tokenizer *tokenizer, AST *ast);
 
 #pragma endregion
 

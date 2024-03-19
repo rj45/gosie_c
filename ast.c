@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-void astInit(AST *ast, Tokenizer tokenizer) {
+void astInit(AST *ast, Source src) {
   memset(ast, 0, sizeof(AST));
-  ast->tokenizer = tokenizer;
+  ast->src = src;
 }
 
 void astFree(AST *ast) { free(ast->nodes); }
@@ -19,6 +19,8 @@ NodeID astRootNode(AST *ast) {
   }
   return NO_NODE;
 }
+
+NodeRes astReserveNode(AST *ast) { return (NodeRes){.node = ast->numNodes}; }
 
 NodeCtx astStartNode(AST *ast, NodeType type, Token token) {
   if (ast->numNodes == ast->capacity) {
@@ -32,16 +34,32 @@ NodeCtx astStartNode(AST *ast, NodeType type, Token token) {
   ast->nodes[node].type = type;
   ast->nodes[node].token = token;
 
-  return (NodeCtx){.node = node, .numNodes = ast->numNodes};
+  return (NodeCtx){.node = node};
 }
 
-void astEndNode(AST *ast, NodeCtx ctx) {
-  ast->nodes[ctx.node].subNodes = ast->numNodes - ctx.numNodes;
-}
-
-void astAddNode(AST *ast, NodeType type, Token token) {
+NodeCtx astInsertNode(AST *ast, NodeRes reserve, NodeType type, Token token) {
   NodeCtx ctx = astStartNode(ast, type, token);
-  astEndNode(ast, ctx);
+  Node tmp = ast->nodes[ctx.node];
+  memmove(&ast->nodes[reserve.node + 1], &ast->nodes[reserve.node],
+          (ast->numNodes - reserve.node) * sizeof(Node));
+  ast->nodes[reserve.node] = tmp;
+  return (NodeCtx){.node = reserve.node};
+}
+
+NodeID astEndNode(AST *ast, NodeCtx ctx) {
+  uint32_t subNodes = ast->numNodes - (ctx.node + 1);
+  ast->nodes[ctx.node].subNodes = subNodes;
+  return ctx.node;
+}
+
+NodeID astAddNode(AST *ast, NodeType type, Token token) {
+  NodeCtx ctx = astStartNode(ast, type, token);
+  return astEndNode(ast, ctx);
+}
+
+Token astSetToken(AST *ast, NodeCtx ctx, Token token) {
+  ast->nodes[ctx.node].token = token;
+  return token;
 }
 
 const char *nodeTypeString[] = {
@@ -103,7 +121,7 @@ char *astDump(AST *ast, NodeID node, int indent, char *start, char *end) {
 
   bool skipComma = true;
   if (curNode.type == LITERAL) {
-    cur = tokenString(&ast->tokenizer, curNode.token, cur, end);
+    cur = srcTokenString(cur, end, ast->src, curNode.token);
   } else if (curNode.type == BINARY) {
     cur = seprintf(cur, end, "%s,", tokenTypeString(curNode.token.type));
     if (nextIndent == 0) {

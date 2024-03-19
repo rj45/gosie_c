@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void tokenizerInit(Tokenizer *tokenizer, const char *src) {
+void tokenizerInit(Tokenizer *tokenizer, Source src) {
   tokenizer->src = src;
   tokenizer->token = (Token){.type = TK_INVALID, .position = 0};
 }
@@ -30,9 +30,29 @@ static TokenType tokenType(char c) {
   }
 }
 
-int findTokenEnd(const Tokenizer *tokenizer, Token token) {
+Token tokenFindNext(const Tokenizer *tokenizer, Token token) {
+  int index = srcFindTokenEnd(tokenizer->src, token);
+  return (Token){.type = tokenType(tokenizer->src.src[index]),
+                 .position = index};
+};
+
+Token tokenPeek(Tokenizer *tokenizer) {
+  Token token = tokenizer->token;
+  do {
+    token = tokenFindNext(tokenizer, token);
+  } while (token.type == TK_WHITESPACE);
+  return token;
+}
+
+Token tokenNext(Tokenizer *tokenizer) {
+  Token token = tokenPeek(tokenizer);
+  tokenizer->token = token;
+  return token;
+}
+
+int srcFindTokenEnd(Source source, Token token) {
   int index = token.position;
-  const char *src = tokenizer->src + index;
+  const char *src = source.src + index;
   while (tokenType(*src) == token.type) {
     src++;
     index++;
@@ -40,28 +60,16 @@ int findTokenEnd(const Tokenizer *tokenizer, Token token) {
   return index;
 }
 
-Token findNextToken(const Tokenizer *tokenizer, Token token) {
-  int index = findTokenEnd(tokenizer, token);
-  return (Token){.type = tokenType(tokenizer->src[index]), .position = index};
-};
-
-Token nextToken(Tokenizer *tokenizer) {
-  Token token = tokenizer->token;
-  do {
-    token = findNextToken(tokenizer, token);
-  } while (token.type == TK_WHITESPACE);
-  tokenizer->token = token;
-  return token;
+const char *srcTokenStringNoNull(Source src, Token token) {
+  if (token.position >= src.len) {
+    return "";
+  }
+  return src.src + token.position;
 }
 
-const char *tokenStringNoNull(Tokenizer *tokenizer, Token token) {
-  return tokenizer->src + token.position;
-}
-
-char *tokenString(Tokenizer *tokenizer, Token token, char *buffer, char *end) {
-  int len = findTokenEnd(tokenizer, token) - token.position;
-  return seprintf(buffer, end, "%.*s", len,
-                  tokenStringNoNull(tokenizer, token));
+char *srcTokenString(char *start, char *end, Source src, Token token) {
+  int len = srcFindTokenEnd(src, token) - token.position;
+  return seprintf(start, end, "%.*s", len, srcTokenStringNoNull(src, token));
 }
 
 static const char *typeStrings[] = {
