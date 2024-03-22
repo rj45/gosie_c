@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "stb_ds.h"
+
 #pragma region Tokenizer
 
 typedef enum TokenType {
@@ -96,7 +98,79 @@ NodeRes astReserveNode(AST *ast);
 NodeCtx astInsertNode(AST *ast, NodeRes reserve, NodeType type, Token token);
 Token astSetToken(AST *ast, NodeCtx ctx, Token token);
 
+typedef struct ChildIter {
+  AST *ast;
+  uint32_t subnodesLeft;
+  NodeID node;
+} ChildIter;
+ChildIter astNewChildIter(AST *ast, NodeID node);
+NodeID astCurChild(ChildIter iter);
+ChildIter astNextChild(ChildIter iter);
+
 char *astDump(AST *ast, NodeID node, int indent, char *start, char *end);
+
+#pragma endregion
+
+#pragma region IR
+
+typedef enum Op {
+  OP_INVALID,
+  OP_INT,
+  OP_ADD,
+  OP_SUB,
+  OP_ERROR,
+} Op;
+
+typedef enum InputType {
+  INPUT_NONE,
+  INPUT_ONE,
+  INPUT_TWO,
+  INPUT_INT,
+} InputType;
+
+typedef struct OpDef {
+  const char *name;
+  InputType inputType;
+} OpDef;
+
+const OpDef *opDef(Op op);
+
+typedef uint32_t InstrID;
+// static const InstrID NO_INSTR = 0xffffffff;
+
+typedef struct Instr {
+  Op op;
+  NodeID astNode;
+  union {
+    uint64_t intConst;
+    InstrID inputs[2];
+  };
+} Instr;
+
+typedef struct IR {
+  Instr *instrs; // stb dynamic array
+  AST *ast;
+} IR;
+
+void irInit(IR *ir, AST *ast);
+void irFree(IR *ir);
+InstrID irAddInstr(IR *ir, Op op, NodeID astNode);
+InstrID irSetInt(IR *ir, InstrID instr, uint64_t value);
+InstrID irSetInput1(IR *ir, InstrID instr, InstrID input);
+InstrID irSetInput2(IR *ir, InstrID instr, InstrID input1, InstrID input2);
+char *irPrintInstr(char *start, char *end, IR *ir, InstrID instr);
+char *irDump(IR *ir, char *start, char *end);
+
+typedef struct IRBuilder {
+  AST *ast;
+  IR *ir;
+} IRBuilder;
+
+void irBuilderInit(IRBuilder *builder, IR *ir);
+void irBuilderFree(IRBuilder *builder);
+void irBuilderBuild(IRBuilder *builder);
+
+void irBuilderBuild(IRBuilder *builder);
 
 #pragma endregion
 

@@ -67,12 +67,6 @@ const char *nodeTypeString[] = {
     [LITERAL] = "literal",
 };
 
-typedef struct ChildIter {
-  AST *ast;
-  uint32_t subnodesLeft;
-  NodeID node;
-} ChildIter;
-
 ChildIter astNewChildIter(AST *ast, NodeID node) {
   return (ChildIter){
       .ast = ast, .subnodesLeft = ast->nodes[node].subNodes, .node = node + 1};
