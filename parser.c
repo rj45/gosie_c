@@ -38,19 +38,23 @@ static NodeID parseBinary(Parser *parser) {
 
   NodeID left = parsePrimary(parser);
 
-  switch (peekTokenType(parser)) {
-  case TK_ADD:
-  case TK_SUB:
-    ctx = astInsertNode(parser->ast, res, BINARY, tokenNext(parser->tokenizer));
+  for (;;) {
+    switch (peekTokenType(parser)) {
+    case TK_ADD:
+    case TK_SUB:
+      ctx =
+          astInsertNode(parser->ast, res, BINARY, tokenNext(parser->tokenizer));
 
-    break;
-  default:
-    return left;
+      break;
+    default:
+      return left;
+    }
+
+    parsePrimary(parser);
+    left = astEndNode(parser->ast, ctx);
   }
 
-  parseBinary(parser);
-
-  return astEndNode(parser->ast, ctx);
+  return left;
 }
 
 void parse(Tokenizer *tokenizer, AST *ast) {

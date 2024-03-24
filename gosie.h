@@ -111,6 +111,12 @@ char *astDump(AST *ast, NodeID node, int indent, char *start, char *end);
 
 #pragma endregion
 
+#pragma region Parser
+
+void parse(Tokenizer *tokenizer, AST *ast);
+
+#pragma endregion
+
 #pragma region IR
 
 typedef enum Op {
@@ -136,7 +142,7 @@ typedef struct OpDef {
 const OpDef *opDef(Op op);
 
 typedef uint32_t InstrID;
-// static const InstrID NO_INSTR = 0xffffffff;
+static const InstrID NO_INSTR = 0xffffffff;
 
 typedef struct Instr {
   Op op;
@@ -172,11 +178,7 @@ void irBuilderBuild(IRBuilder *builder);
 
 void irBuilderBuild(IRBuilder *builder);
 
-#pragma endregion
-
-#pragma region Parser
-
-void parse(Tokenizer *tokenizer, AST *ast);
+char *genCode(char *start, char *end, IR *ir);
 
 #pragma endregion
 

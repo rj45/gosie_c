@@ -109,3 +109,39 @@ void irBuilderBuild(IRBuilder *builder) {
   InstrID result = addInstr(builder, astRootNode(builder->ast));
   irSetInput1(builder->ir, irAddInstr(builder->ir, OP_ERROR, NO_NODE), result);
 }
+
+char *genCode(char *start, char *end, IR *ir) {
+  for (size_t i = 0; i < (size_t)arrlen(ir->instrs); i++) {
+    const Instr *instr = &ir->instrs[i];
+    switch (instr->op) {
+    case OP_INVALID:
+      start = seprintf(start, end, "invalid\n");
+      break;
+    case OP_INT:
+      // ignore (will be handled by OP_ADD and OP_SUB)
+      break;
+    case OP_SUB: // fallthrough
+    case OP_ADD: {
+      const Instr *left = &ir->instrs[instr->inputs[0]];
+      const Instr *right = &ir->instrs[instr->inputs[1]];
+
+      if (left->op == OP_INT) {
+        start = seprintf(start, end, "move a0, %llu\n", left->intConst);
+      }
+      assert(right->op == OP_INT);
+      start = seprintf(start, end, "%s a0, %llu\n", opDef(instr->op)->name,
+                       right->intConst);
+      break;
+    }
+    case OP_ERROR: {
+      const Instr *operand = &ir->instrs[instr->inputs[0]];
+      if (operand->op == OP_INT) {
+        start = seprintf(start, end, "move a0, %llu\n", operand->intConst);
+      }
+      start = seprintf(start, end, "error\n");
+      break;
+    }
+    }
+  }
+  return start;
+}

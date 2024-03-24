@@ -6,34 +6,31 @@
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
-  (void)argc;
-  assert(sizeof(Token) == 4);
-
-  Source src = {argv[1], strlen(argv[1])};
-  Tokenizer tokenizer;
-  tokenizerInit(&tokenizer, src);
-
-  for (;;) {
-    Token token = tokenNext(&tokenizer);
-    switch (token.type) {
-    case TK_WHITESPACE: // fallthrough
-    case TK_INVALID:
-      fprintf(stderr, "error: invalid token\n");
-      return 1;
-    case TK_INT:
-      printf("move a0, %d\n", atoi(srcTokenStringNoNull(src, token)));
-      break;
-    case TK_ADD:
-      token = tokenNext(&tokenizer);
-      printf("add a0, %d\n", atoi(srcTokenStringNoNull(src, token)));
-      break;
-    case TK_SUB:
-      token = tokenNext(&tokenizer);
-      printf("sub a0, %d\n", atoi(srcTokenStringNoNull(src, token)));
-      break;
-    case TK_EOF:
-      printf("error\n");
-      return 0;
-    }
+  if (argc != 2) {
+    fprintf(stderr, "usage: %s <source>\n", argv[0]);
+    return 1;
   }
+
+  Tokenizer tokenizer;
+  AST ast;
+  IR ir;
+  IRBuilder builder;
+  Source src = (Source){argv[1], strlen(argv[1])};
+
+  tokenizerInit(&tokenizer, src);
+  astInit(&ast, src);
+  irInit(&ir, &ast);
+  irBuilderInit(&builder, &ir);
+
+  parse(&tokenizer, &ast);
+  irBuilderBuild(&builder);
+
+  char buffer[1024];
+  char *end = buffer + sizeof(buffer) - 1;
+  genCode(buffer, end, &ir);
+
+  printf("%s", buffer);
+
+  irFree(&ir);
+  astFree(&ast);
 }
