@@ -182,6 +182,8 @@ char *genCode(char *start, char *end, IR *ir);
 
 #pragma endregion
 
+int compileAndRun(const char *source);
+
 #pragma region utils
 
 // from: https://text.causal.agency/024-seprintf.txt

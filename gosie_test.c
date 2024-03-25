@@ -123,3 +123,25 @@ UTEST(genCode, codeGeneration) {
     astFree(&ast);
   }
 }
+
+typedef struct endToEndTestcase {
+  const char *name;
+  const char *src;
+  int result;
+} endToEndTestcase;
+
+const endToEndTestcase endToEndTests[] = {
+    {"int literal 0", "0", 0},
+    {"int literal 42", "42", 42},
+    {"expression 5+20-4", "5+20-4", 21},
+    {"expression 12-14+5", "12-14+5", 3},
+    {"expression with spaces", " 12 + 34 - 5 ", 41},
+};
+
+UTEST(compileAndRun, endToEnd) {
+  for (size_t i = 0; i < sizeof(endToEndTests) / sizeof(endToEndTests[0]);
+       i++) {
+    int result = compileAndRun(endToEndTests[i].src);
+    ASSERT_EQ_MSG(endToEndTests[i].result, result, endToEndTests[i].name);
+  }
+}
