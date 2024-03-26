@@ -1,0 +1,218 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "ast.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/ast.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "token.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/token.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "parser.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/parser.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "ir.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/ir.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "compile.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/compile.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "stb_ds.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/stb_ds.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "emu/rj32/emurj.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/emu/rj32/emurj.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "emu/rj32/inst.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/emu/rj32/inst.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "emu/rj32/bus.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/emu/rj32/bus.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "emu/rj32/cpu.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/emu/rj32/cpu.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "test.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/test.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-std=c11",
+      "-Wall",
+      "-Werror",
+      "-g",
+      "-O0",
+      "-fsanitize=address",
+      "-o",
+      "test",
+      "gosie_test.c"
+    ],
+    "directory": "/Users/rj45/Code/gosie_c",
+    "file": "/Users/rj45/Code/gosie_c/gosie_test.c",
+    "output": "/Users/rj45/Code/gosie_c/test"
+  }
+]

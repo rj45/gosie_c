@@ -1,0 +1,15 @@
+---
+Checks:
+  - clang-diagnostic-*
+  - clang-analyzer-*
+  - bug-prone-*
+  - performance-*
+  - modernize-*
+  - misc-*
+WarningsAsErrors: ''
+HeaderFileExtensions:
+  - h
+ImplementationFileExtensions:
+  - c
+HeaderFilterRegex: ''
+FormatStyle:     LLVM
