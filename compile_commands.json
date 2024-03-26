@@ -11,10 +11,10 @@
       "-fsanitize=address",
       "-o",
       "test",
-      "ast.c"
+      "src/ast.c"
     ],
     "directory": "/Users/rj45/Code/gosie_c",
-    "file": "/Users/rj45/Code/gosie_c/ast.c",
+    "file": "/Users/rj45/Code/gosie_c/src/ast.c",
     "output": "/Users/rj45/Code/gosie_c/test"
   },
   {
@@ -29,10 +29,10 @@
       "-fsanitize=address",
       "-o",
       "test",
-      "token.c"
+      "src/token.c"
     ],
     "directory": "/Users/rj45/Code/gosie_c",
-    "file": "/Users/rj45/Code/gosie_c/token.c",
+    "file": "/Users/rj45/Code/gosie_c/src/token.c",
     "output": "/Users/rj45/Code/gosie_c/test"
   },
   {
@@ -47,10 +47,10 @@
       "-fsanitize=address",
       "-o",
       "test",
-      "parser.c"
+      "src/parser.c"
     ],
     "directory": "/Users/rj45/Code/gosie_c",
-    "file": "/Users/rj45/Code/gosie_c/parser.c",
+    "file": "/Users/rj45/Code/gosie_c/src/parser.c",
     "output": "/Users/rj45/Code/gosie_c/test"
   },
   {
@@ -65,10 +65,10 @@
       "-fsanitize=address",
       "-o",
       "test",
-      "ir.c"
+      "src/ir.c"
     ],
     "directory": "/Users/rj45/Code/gosie_c",
-    "file": "/Users/rj45/Code/gosie_c/ir.c",
+    "file": "/Users/rj45/Code/gosie_c/src/ir.c",
     "output": "/Users/rj45/Code/gosie_c/test"
   },
   {
@@ -83,10 +83,10 @@
       "-fsanitize=address",
       "-o",
       "test",
-      "compile.c"
+      "src/compile.c"
     ],
     "directory": "/Users/rj45/Code/gosie_c",
-    "file": "/Users/rj45/Code/gosie_c/compile.c",
+    "file": "/Users/rj45/Code/gosie_c/src/compile.c",
     "output": "/Users/rj45/Code/gosie_c/test"
   },
   {
@@ -101,10 +101,10 @@
       "-fsanitize=address",
       "-o",
       "test",
-      "stb_ds.c"
+      "src/stb_ds.c"
     ],
     "directory": "/Users/rj45/Code/gosie_c",
-    "file": "/Users/rj45/Code/gosie_c/stb_ds.c",
+    "file": "/Users/rj45/Code/gosie_c/src/stb_ds.c",
     "output": "/Users/rj45/Code/gosie_c/test"
   },
   {
@@ -191,10 +191,10 @@
       "-fsanitize=address",
       "-o",
       "test",
-      "test.c"
+      "src/test.c"
     ],
     "directory": "/Users/rj45/Code/gosie_c",
-    "file": "/Users/rj45/Code/gosie_c/test.c",
+    "file": "/Users/rj45/Code/gosie_c/src/test.c",
     "output": "/Users/rj45/Code/gosie_c/test"
   },
   {
@@ -209,10 +209,10 @@
       "-fsanitize=address",
       "-o",
       "test",
-      "gosie_test.c"
+      "src/gosie_test.c"
     ],
     "directory": "/Users/rj45/Code/gosie_c",
-    "file": "/Users/rj45/Code/gosie_c/gosie_test.c",
+    "file": "/Users/rj45/Code/gosie_c/src/gosie_test.c",
     "output": "/Users/rj45/Code/gosie_c/test"
   }
 ]

@@ -1,6 +1,6 @@
-#include "emu/rj32/emurj.h"
+#include "../emu/rj32/emurj.h"
+#include "../libcustomasm/libcustomasm.h"
 #include "gosie.h"
-#include "libcustomasm/libcustomasm.h"
 
 int compileAndRun(const char *source) {
   Source src = (Source){source, strlen(source)};
