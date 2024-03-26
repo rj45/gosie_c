@@ -90,7 +90,7 @@ typedef struct NodeRes {
 void astInit(AST *ast, Source src);
 void astFree(AST *ast);
 
-NodeID astRootNode(AST *ast);
+NodeID astRootNode(const AST *ast);
 NodeCtx astStartNode(AST *ast, NodeType type, Token token);
 NodeID astEndNode(AST *ast, NodeCtx ctx);
 NodeID astAddNode(AST *ast, NodeType type, Token token);

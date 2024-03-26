@@ -1,10 +1,5 @@
 #include "gosie.h"
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 void tokenizerInit(Tokenizer *tokenizer, Source src) {
   tokenizer->src = src;
   tokenizer->token = (Token){.type = TK_INVALID, .position = 0};

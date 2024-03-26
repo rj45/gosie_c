@@ -1,19 +1,14 @@
 #include "gosie.h"
 
-#include <assert.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void astInit(AST *ast, Source src) {
-  memset(ast, 0, sizeof(AST));
-  ast->src = src;
-}
+void astInit(AST *ast, Source src) { *ast = (AST){.src = src}; }
 
 void astFree(AST *ast) { free(ast->nodes); }
 
-NodeID astRootNode(AST *ast) {
+NodeID astRootNode(const AST *ast) {
   if (ast->numNodes > 0) {
     return 0;
   }

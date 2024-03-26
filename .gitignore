@@ -6,5 +6,5 @@ emu/rj32/emurj
 emu/rj32/test
 tmp.asm
 tmp.rom
-
-
+*.dSYM
+.cache

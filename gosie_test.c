@@ -1,8 +1,6 @@
 #include "gosie.h"
 #include "utest.h"
 
-#include <assert.h>
-
 typedef struct testcase {
   const char *name;
   const char *src;

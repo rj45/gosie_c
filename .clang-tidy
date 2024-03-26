@@ -6,6 +6,7 @@ Checks:
   - performance-*
   - modernize-*
   - misc-*
+  - -misc-no-recursion
 WarningsAsErrors: ''
 HeaderFileExtensions:
   - h

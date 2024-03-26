@@ -41,7 +41,11 @@ int compileAndRun(const char *source) {
 
   const unsigned char *binary = NULL;
 
-  assemble_str_to_binary(assembly, &binary, &size);
+  AsmResult result = assemble_str_to_binary(assembly, &binary, &size);
+  if (result != Ok) {
+    fprintf(stderr, "error: assembly failed\n");
+    return 1;
+  }
 
   int code = runRj32Emu(100000, (uint16_t *)binary, size / 2, NULL, 0, true);
 
