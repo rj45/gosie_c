@@ -19,6 +19,12 @@ static TokenType tokenType(char c) {
     return TK_ADD;
   case '-':
     return TK_SUB;
+  case '&':
+    return TK_AMP;
+  case '|':
+    return TK_OR;
+  case '^':
+    return TK_XOR;
   default:
     return TK_ERROR;
   }
@@ -70,13 +76,16 @@ char *srcTokenString(char *start, char *end, Source src, Token token) {
 }
 
 static const char *typeStrings[] = {
-    [TK_WHITESPACE] = "whitespace",
     [TK_INVALID] = "invalid",
+    [TK_ERROR] = "<error>",
+    [TK_WHITESPACE] = "whitespace",
+    [TK_EOF] = "eof",
     [TK_INT] = "int",
     [TK_ADD] = "add",
     [TK_SUB] = "sub",
-    [TK_EOF] = "eof",
-    [TK_ERROR] = "<error>",
+    [TK_AMP] = "amp",
+    [TK_OR] = "or",
+    [TK_XOR] = "xor",
 };
 
 const char *tokenTypeString(TokenType type) { return typeStrings[type]; }

@@ -32,16 +32,27 @@ static NodeID parsePrimary(Parser *parser) {
   }
 }
 
-static NodeID parseBinary(Parser *parser) {
+int precedence[] = {
+    [TK_ADD] = 4, [TK_SUB] = 4, [TK_AMP] = 8, [TK_OR] = 9, [TK_XOR] = 10,
+};
+
+static NodeID parseBinary(Parser *parser, int minPrecedence) {
   NodeRes res = astReserveNode(parser->ast);
   NodeCtx ctx;
 
   NodeID left = parsePrimary(parser);
 
   for (;;) {
-    switch (peekTokenType(parser)) {
+    TokenType type = peekTokenType(parser);
+    switch (type) {
     case TK_ADD:
     case TK_SUB:
+    case TK_AMP:
+    case TK_OR:
+    case TK_XOR:
+      if (precedence[type] <= minPrecedence) {
+        return left;
+      }
       ctx =
           astInsertNode(parser->ast, res, BINARY, tokenNext(parser->tokenizer));
 
@@ -50,7 +61,7 @@ static NodeID parseBinary(Parser *parser) {
       return left;
     }
 
-    parsePrimary(parser);
+    parseBinary(parser, precedence[type]);
     left = astEndNode(parser->ast, ctx);
   }
 
@@ -60,7 +71,7 @@ static NodeID parseBinary(Parser *parser) {
 void parse(Tokenizer *tokenizer, AST *ast) {
   Parser parser = {.tokenizer = tokenizer, .ast = ast, .errs = tokenizer->errs};
 
-  parseBinary(&parser);
+  parseBinary(&parser, 0);
 
   expectToken(&parser, TK_EOF);
 }

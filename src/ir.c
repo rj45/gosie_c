@@ -5,7 +5,8 @@
 const OpDef opDefs[] = {
     [OP_INVALID] = {"invalid", INPUT_NONE}, [OP_INT] = {"int", INPUT_INT},
     [OP_ADD] = {"add", INPUT_TWO},          [OP_SUB] = {"sub", INPUT_TWO},
-    [OP_ERROR] = {"error", INPUT_ONE},
+    [OP_AND] = {"and", INPUT_TWO},          [OP_OR] = {"or", INPUT_TWO},
+    [OP_XOR] = {"xor", INPUT_TWO},          [OP_ERROR] = {"error", INPUT_ONE},
 };
 
 const OpDef *opDef(Op op) { return &opDefs[op]; }
@@ -73,10 +74,11 @@ void irBuilderInit(IRBuilder *builder, IR *ir) {
 void irBuilderFree(IRBuilder *builder) {}
 
 // FIXME: can read past the end of this array in the case of a missing token
-Op tokenTypeOp[] = {
-    [TK_ADD] = OP_ADD,
-    [TK_SUB] = OP_SUB,
-};
+Op tokenTypeOp[] = {[TK_ADD] = OP_ADD,
+                    [TK_SUB] = OP_SUB,
+                    [TK_AMP] = OP_AND,
+                    [TK_OR] = OP_OR,
+                    [TK_XOR] = OP_XOR};
 
 static InstrID addInstr(IRBuilder *builder, NodeID astNode) {
   switch (builder->ast->nodes[astNode].type) {
@@ -120,6 +122,9 @@ char *genCode(char *start, char *end, IR *ir) {
     case OP_INT:
       // ignore (will be handled by OP_ADD and OP_SUB)
       break;
+    case OP_AND: // fallthrough
+    case OP_OR:  // fallthrough
+    case OP_XOR: // fallthrough
     case OP_SUB: // fallthrough
     case OP_ADD: {
       const Instr *left = &ir->instrs[instr->inputs[0]];

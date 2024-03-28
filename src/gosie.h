@@ -22,6 +22,9 @@ typedef enum TokenType {
   TK_INT,
   TK_ADD,
   TK_SUB,
+  TK_AMP,
+  TK_OR,
+  TK_XOR,
 } TokenType;
 
 typedef struct Token {
@@ -126,6 +129,9 @@ typedef enum Op {
   OP_INT,
   OP_ADD,
   OP_SUB,
+  OP_AND,
+  OP_OR,
+  OP_XOR,
   OP_ERROR,
 } Op;
 

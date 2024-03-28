@@ -16,6 +16,14 @@ const TestCase tests[] = {
      "  binary(add, literal(3), literal(5)),\n"
      "  literal(7)\n"
      ")"},
+    {"and or xor", "3 + 6 ^ 7 & 5 | 2",
+     "binary(add,\n"
+     "  literal(3),\n"
+     "  binary(amp,\n"
+     "    binary(xor, literal(6), literal(7)),\n"
+     "    binary(or, literal(5), literal(2))\n"
+     "  )\n"
+     ")"},
 };
 
 UTEST(Parser, testCases) {
@@ -60,6 +68,17 @@ const TestCase irTests[] = {
      "v3 = int 7\n"
      "v4 = sub v2, v3\n"
      "v5 = error v4\n"},
+    {"and or xor", "3 + 6 ^ 7 & 5 | 2",
+     "v0 = int 3\n"
+     "v1 = int 6\n"
+     "v2 = int 7\n"
+     "v3 = xor v1, v2\n"
+     "v4 = int 5\n"
+     "v5 = int 2\n"
+     "v6 = or v4, v5\n"
+     "v7 = and v3, v6\n"
+     "v8 = add v0, v7\n"
+     "v9 = error v8\n"},
 };
 
 UTEST(IR, irTests) {
