@@ -1,13 +1,14 @@
 #include "gosie.h"
 #include "utest.h"
+#include <string.h>
 
-typedef struct testcase {
+typedef struct TestCase {
   const char *name;
   const char *src;
   const char *result;
-} testcase;
+} TestCase;
 
-const testcase tests[] = {
+const TestCase tests[] = {
     {"int literal 42", "42", "literal(42)"},
     {"add 2 and 5", "2+5", "binary(add, literal(2), literal(5))"},
     {"add 3 and 5 and subtract 7", "3+5-7",
@@ -21,22 +22,29 @@ UTEST(Parser, testCases) {
   for (size_t i = 0; i < sizeof(tests) / sizeof(tests[0]); i++) {
     Tokenizer tokenizer;
     AST ast;
-    tokenizerInit(&tokenizer, (Source){tests[i].src, strlen(tests[i].src)});
-    astInit(&ast, (Source){tests[i].src, strlen(tests[i].src)});
+    ErrorList errs;
+    Source src = (Source){tests[i].src, strlen(tests[i].src)};
+
+    errInit(&errs, src);
+    tokenizerInit(&tokenizer, src, &errs);
+    astInit(&ast, src);
 
     parse(&tokenizer, &ast);
+
+    ASSERT_FALSE(errHasErrors(&errs));
 
     char buffer[1024];
     char *end = buffer + sizeof(buffer) - 1;
     astDump(&ast, astRootNode(&ast), 0, buffer, end);
 
-    ASSERT_STREQ_MSG(tests[i].result, buffer, tests[i].name);
-
     astFree(&ast);
+    errFree(&errs);
+
+    ASSERT_STREQ_MSG(tests[i].result, buffer, tests[i].name);
   }
 }
 
-const testcase irTests[] = {
+const TestCase irTests[] = {
     {"int literal 42", "42",
      "v0 = int 42\n"
      "v1 = error v0\n"},
@@ -60,27 +68,33 @@ UTEST(IR, irTests) {
     AST ast;
     IR ir;
     IRBuilder builder;
+    ErrorList errs;
+    Source src = (Source){irTests[i].src, strlen(irTests[i].src)};
 
-    tokenizerInit(&tokenizer, (Source){irTests[i].src, strlen(irTests[i].src)});
-    astInit(&ast, (Source){irTests[i].src, strlen(irTests[i].src)});
+    errInit(&errs, src);
+    tokenizerInit(&tokenizer, src, &errs);
+    astInit(&ast, src);
     irInit(&ir, &ast);
     irBuilderInit(&builder, &ir);
 
     parse(&tokenizer, &ast);
+    ASSERT_FALSE(errHasErrors(&errs));
+
     irBuilderBuild(&builder);
 
     char buffer[1024];
     char *end = buffer + sizeof(buffer) - 1;
     irDump(&ir, buffer, end);
 
-    ASSERT_STREQ_MSG(irTests[i].result, buffer, irTests[i].name);
-
+    errFree(&errs);
     irFree(&ir);
     astFree(&ast);
+
+    ASSERT_STREQ_MSG(irTests[i].result, buffer, irTests[i].name);
   }
 }
 
-const testcase codegenTests[] = {
+const TestCase codegenTests[] = {
     {"int literal 42", "42",
      "move a0, 42\n"
      "error\n"},
@@ -101,24 +115,32 @@ UTEST(genCode, codeGeneration) {
     AST ast;
     IR ir;
     IRBuilder builder;
+    ErrorList errs;
+    Source src = (Source){codegenTests[i].src, strlen(codegenTests[i].src)};
 
-    tokenizerInit(&tokenizer,
-                  (Source){codegenTests[i].src, strlen(codegenTests[i].src)});
-    astInit(&ast, (Source){codegenTests[i].src, strlen(codegenTests[i].src)});
+    errInit(&errs, src);
+    tokenizerInit(&tokenizer, src, &errs);
+    astInit(&ast, src);
     irInit(&ir, &ast);
     irBuilderInit(&builder, &ir);
 
     parse(&tokenizer, &ast);
+
+    ASSERT_FALSE(errHasErrors(&errs));
+
     irBuilderBuild(&builder);
 
     char buffer[1024];
     char *end = buffer + sizeof(buffer) - 1;
     genCode(buffer, end, &ir);
 
-    ASSERT_STREQ_MSG(codegenTests[i].result, buffer, codegenTests[i].name);
+    ASSERT_FALSE(errHasErrors(&errs));
 
+    errFree(&errs);
     irFree(&ir);
     astFree(&ast);
+
+    ASSERT_STREQ_MSG(codegenTests[i].result, buffer, codegenTests[i].name);
   }
 }
 
@@ -141,5 +163,47 @@ UTEST(compileAndRun, endToEnd) {
        i++) {
     int result = compileAndRun(endToEndTests[i].src);
     ASSERT_EQ_MSG(endToEndTests[i].result, result, endToEndTests[i].name);
+  }
+}
+
+TestCase errorTests[] = {
+    {"unexpected character", "\e", "unexpected character '\e'"},
+    {"expected primary", "\e", "expected primary"},
+    {"expected eof", "1 1", "expected eof token, got int"},
+};
+
+UTEST(Parser, errorCases) {
+  for (size_t i = 0; i < sizeof(errorTests) / sizeof(errorTests[0]); i++) {
+    Tokenizer tokenizer;
+    AST ast;
+    Source src = (Source){errorTests[i].src, strlen(errorTests[i].src)};
+    ErrorList errs;
+
+    errInit(&errs, src);
+    tokenizerInit(&tokenizer, src, &errs);
+    astInit(&ast, src);
+
+    parse(&tokenizer, &ast);
+
+    ASSERT_TRUE_MSG(errHasErrors(&errs), "expected to have errors");
+
+    char buffer[1024];
+    char *start = buffer;
+    char *end = buffer + sizeof(buffer) - 1;
+
+    for (size_t i = 0; i < arrlen(errs.errors); i++) {
+      Error error = errs.errors[i];
+      start = seprintf(start, end, "%d: %s\n", error.token.position, error.msg);
+    }
+
+    char *result = strnstr(buffer, errorTests[i].result, buffer - start);
+    if (result == NULL) {
+      fprintf(stderr, "expected to contain: %s\n", errorTests[i].result);
+      fprintf(stderr, "got: %s\n", buffer);
+    }
+    ASSERT_NE_MSG(NULL, result, errorTests[i].name);
+
+    astFree(&ast);
+    errFree(&errs);
   }
 }

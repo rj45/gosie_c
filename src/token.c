@@ -1,8 +1,7 @@
 #include "gosie.h"
 
-void tokenizerInit(Tokenizer *tokenizer, Source src) {
-  tokenizer->src = src;
-  tokenizer->token = (Token){.type = TK_INVALID, .position = 0};
+void tokenizerInit(Tokenizer *tokenizer, Source src, ErrorList *errs) {
+  *tokenizer = (Tokenizer){.src = src, .token = INVALID_TOKEN, .errs = errs};
 }
 
 static TokenType tokenType(char c) {
@@ -21,14 +20,18 @@ static TokenType tokenType(char c) {
   case '-':
     return TK_SUB;
   default:
-    return TK_INVALID;
+    return TK_ERROR;
   }
 }
 
 Token tokenFindNext(const Tokenizer *tokenizer, Token token) {
   int index = srcFindTokenEnd(tokenizer->src, token);
-  return (Token){.type = tokenType(tokenizer->src.src[index]),
-                 .position = index};
+  TokenType type = tokenType(tokenizer->src.src[index]);
+  if (type == TK_ERROR) {
+    errErrorf(tokenizer->errs, token, "unexpected character '%c'",
+              tokenizer->src.src[index]);
+  }
+  return (Token){.type = type, .position = index};
 };
 
 Token tokenPeek(Tokenizer *tokenizer) {
@@ -47,9 +50,8 @@ Token tokenNext(Tokenizer *tokenizer) {
 
 int srcFindTokenEnd(Source source, Token token) {
   int index = token.position;
-  const char *src = source.src + index;
-  while (tokenType(*src) == token.type) {
-    src++;
+  const char *src = source.src;
+  while (tokenType(src[index]) == token.type) {
     index++;
   }
   return index;
@@ -74,6 +76,7 @@ static const char *typeStrings[] = {
     [TK_ADD] = "add",
     [TK_SUB] = "sub",
     [TK_EOF] = "eof",
+    [TK_ERROR] = "<error>",
 };
 
 const char *tokenTypeString(TokenType type) { return typeStrings[type]; }

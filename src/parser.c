@@ -1,10 +1,9 @@
 #include "gosie.h"
 
-#include <stdlib.h>
-
 typedef struct Parser {
   Tokenizer *tokenizer;
   AST *ast;
+  ErrorList *errs;
 } Parser;
 
 static TokenType peekTokenType(Parser *parser) {
@@ -14,9 +13,8 @@ static TokenType peekTokenType(Parser *parser) {
 static Token expectToken(Parser *parser, TokenType type) {
   Token token = tokenNext(parser->tokenizer);
   if (token.type != type) {
-    fprintf(stderr, "error: expected %s token, got %s\n", tokenTypeString(type),
-            tokenTypeString(token.type));
-    exit(1);
+    errErrorf(parser->errs, token, "expected %s token, got %s\n",
+              tokenTypeString(type), tokenTypeString(token.type));
   }
   return token;
 }
@@ -25,10 +23,12 @@ static NodeID parsePrimary(Parser *parser) {
   switch (peekTokenType(parser)) {
   case TK_INT:
     return astAddNode(parser->ast, LITERAL, expectToken(parser, TK_INT));
-  default:
-    fprintf(stderr, "error: expected primary, got %s\n",
-            tokenTypeString(peekTokenType(parser)));
-    exit(1);
+  default: {
+    Token errtok = tokenPeek(parser->tokenizer);
+    errErrorf(parser->errs, errtok, "expected primary, got %s\n",
+              tokenTypeString(errtok.type));
+    return NO_NODE;
+  }
   }
 }
 
@@ -58,7 +58,7 @@ static NodeID parseBinary(Parser *parser) {
 }
 
 void parse(Tokenizer *tokenizer, AST *ast) {
-  Parser parser = {.tokenizer = tokenizer, .ast = ast};
+  Parser parser = {.tokenizer = tokenizer, .ast = ast, .errs = tokenizer->errs};
 
   parseBinary(&parser);
 

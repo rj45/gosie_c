@@ -1,8 +1,8 @@
-CFLAGS ?= -std=c11 -Wall -Werror
+CFLAGS ?= -std=c11 -Wall -Werror -g -O0 -fsanitize=address
 CC ?= clang
 LIBS = -Llibcustomasm/target/aarch64-apple-darwin/debug -llibcustomasm
 
-SRCS = src/ast.c src/token.c src/parser.c src/ir.c src/compile.c \
+SRCS = src/ast.c src/token.c src/parser.c src/ir.c src/compile.c src/err.c \
 	src/stb_ds.c emu/rj32/emurj.c emu/rj32/inst.c emu/rj32/bus.c \
 	emu/rj32/cpu.c
 

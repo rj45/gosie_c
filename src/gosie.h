@@ -9,10 +9,13 @@
 
 #include "stb_ds.h"
 
+typedef struct ErrorList ErrorList;
+
 #pragma region Tokenizer
 
 typedef enum TokenType {
   TK_INVALID,
+  TK_ERROR,
   TK_EOF,
   TK_WHITESPACE,
   // TK_COMMENT,
@@ -40,9 +43,10 @@ char *srcTokenString(char *start, char *end, Source src, Token token);
 typedef struct Tokenizer {
   Source src;
   Token token;
+  ErrorList *errs;
 } Tokenizer;
 
-void tokenizerInit(Tokenizer *tokenizer, Source src);
+void tokenizerInit(Tokenizer *tokenizer, Source src, ErrorList *errs);
 Token tokenFindNext(const Tokenizer *tokenizer, Token token);
 Token tokenPeek(Tokenizer *tokenizer);
 Token tokenNext(Tokenizer *tokenizer);
@@ -73,8 +77,6 @@ typedef uint32_t ValueType;
 typedef struct AST {
   Node *nodes;      // array of nodes, numNodes long
   ValueType *types; // array of types, numNodes long
-  int numNodes;
-  int capacity;
 
   Source src;
 } AST;
@@ -182,7 +184,32 @@ char *genCode(char *start, char *end, IR *ir);
 
 #pragma endregion
 
+#pragma region Compile
+
 int compileAndRun(const char *source);
+
+#pragma endregion
+
+#pragma region Err
+
+typedef struct Error {
+  const char *msg;
+  Token token;
+} Error;
+
+struct ErrorList {
+  Error *errors;
+  Source src;
+};
+
+void errInit(ErrorList *err, Source src);
+void errFree(ErrorList *err);
+bool errHasErrors(ErrorList *err);
+void errErrorf(ErrorList *err, Token token, const char *msg, ...)
+    __attribute__((format(printf, 3, 4)));
+void errPrintAll(ErrorList *err);
+
+#pragma endregion
 
 #pragma region utils
 

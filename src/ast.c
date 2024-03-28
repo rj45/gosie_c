@@ -1,48 +1,39 @@
 #include "gosie.h"
 
 #include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
 
 void astInit(AST *ast, Source src) { *ast = (AST){.src = src}; }
 
-void astFree(AST *ast) { free(ast->nodes); }
+void astFree(AST *ast) { arrfree(ast->nodes); }
 
 NodeID astRootNode(const AST *ast) {
-  if (ast->numNodes > 0) {
+  if (arrlen(ast->nodes) > 0) {
     return 0;
   }
   return NO_NODE;
 }
 
-NodeRes astReserveNode(AST *ast) { return (NodeRes){.node = ast->numNodes}; }
+NodeRes astReserveNode(AST *ast) {
+  return (NodeRes){.node = arrlen(ast->nodes)};
+}
 
 NodeCtx astStartNode(AST *ast, NodeType type, Token token) {
-  if (ast->numNodes == ast->capacity) {
-    ast->capacity *= 2;
-    ast->nodes = realloc(ast->nodes, ast->capacity * sizeof(Node));
-    ast->types = realloc(ast->types, ast->capacity * sizeof(ValueType));
-  }
+  NodeID id = arrlen(ast->nodes);
+  Node node = (Node){.type = type, .token = token};
+  arrput(ast->nodes, node);
 
-  NodeID node = ast->numNodes;
-  ast->numNodes++;
-  ast->nodes[node].type = type;
-  ast->nodes[node].token = token;
-
-  return (NodeCtx){.node = node};
+  return (NodeCtx){.node = id};
 }
 
 NodeCtx astInsertNode(AST *ast, NodeRes reserve, NodeType type, Token token) {
-  NodeCtx ctx = astStartNode(ast, type, token);
-  Node tmp = ast->nodes[ctx.node];
-  memmove(&ast->nodes[reserve.node + 1], &ast->nodes[reserve.node],
-          (ast->numNodes - reserve.node) * sizeof(Node));
-  ast->nodes[reserve.node] = tmp;
+  Node node = (Node){.type = type, .token = token};
+  arrins(ast->nodes, reserve.node, node);
+
   return (NodeCtx){.node = reserve.node};
 }
 
 NodeID astEndNode(AST *ast, NodeCtx ctx) {
-  uint32_t subNodes = ast->numNodes - (ctx.node + 1);
+  uint32_t subNodes = arrlen(ast->nodes) - (ctx.node + 1);
   ast->nodes[ctx.node].subNodes = subNodes;
   return ctx.node;
 }

@@ -8,15 +8,32 @@ int compileAndRun(const char *source) {
   AST ast;
   IR ir;
   IRBuilder builder;
+  ErrorList errs;
 
-  tokenizerInit(&tokenizer, src);
+  errInit(&errs, src);
+  tokenizerInit(&tokenizer, src, &errs);
 
   astInit(&ast, src);
   parse(&tokenizer, &ast);
 
+  if (errHasErrors(&errs)) {
+    errPrintAll(&errs);
+    errFree(&errs);
+    astFree(&ast);
+    return 1;
+  }
+
   irInit(&ir, &ast);
   irBuilderInit(&builder, &ir);
   irBuilderBuild(&builder);
+
+  if (errHasErrors(&errs)) {
+    errPrintAll(&errs);
+    irFree(&ir);
+    errFree(&errs);
+    astFree(&ast);
+    return 1;
+  }
 
   char assembly[65536];
 
@@ -53,6 +70,7 @@ int compileAndRun(const char *source) {
 
   irFree(&ir);
   astFree(&ast);
+  errFree(&errs);
 
   return code;
 }
